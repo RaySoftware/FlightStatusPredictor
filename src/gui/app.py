@@ -1,5 +1,8 @@
+import os
 import tkinter as tk
 import ttkbootstrap as ttk
+import pickle
+import sklearn
 
 class App (tk.Tk):
     def __init__(self):
@@ -12,13 +15,15 @@ class App (tk.Tk):
         self.currentPage = 0
         self.pages.append(MainFrame(self))
         self.pages[0].grid(sticky="nswe")
+        self.input_data = []
 
-        questions = ["What airline are you flying with?", 
+        self.questions = [
+                     "What airline are you flying with?", 
                      "What is your origin's airport name?",
                      "What is your destination's airport name?",
-                     "What is your departure time?",
+                     "What is your departure time (hhmm)?",
                      "What month is it?",
-                     "What day of the week is it?",
+                     "What day of the week is it? (Sunday .. Saturday)",
                      "What is the origin's city name?",
                      "What is the origin's state name?",
                      "What is the destination's city name?",
@@ -26,8 +31,8 @@ class App (tk.Tk):
                      "What is the distance?",
                      ]
         
-        for i in range(0, len(questions)):
-            self.pages.append(PageFrame(self, questions[i]))
+        for i in range(0, len(self.questions)):
+            self.pages.append(PageFrame(self, self.questions[i]))
         self.pages.append(PredictionFrame(self))
 
         self.rowconfigure(0, weight=1)
@@ -48,6 +53,10 @@ class App (tk.Tk):
             self.pages[self.currentPage].grid_forget()
             self.currentPage += 1
             self.pages[self.currentPage].grid(sticky="nswe")
+
+    def loadPickle(self, pickle_name : str):
+        print("asd", os.listdir("./pickles/"))
+        return pickle.load(open(f"./pickles/{pickle_name}_unique.pickle", "rb"))
 
 class MainFrame(tk.Frame):
     def __init__(self, root):
@@ -75,10 +84,29 @@ class PageFrame(tk.Frame):
                   bootstyle="inverse-primary", font=("Arial", 24, "bold")) \
         .grid(row=0, column=0, columnspan=2, sticky="nswe")
         
-        ttk.Label(self, text = question, anchor="s", justify="center", font=("Arial", 14)).grid(row=1, columnspan=2)
+        ttk.Label(self, text = question, anchor="s", justify="center", font=("Arial", 14, "bold")).grid(row=1, columnspan=2)
         
-        ttk.Combobox(self).grid(row=2, columnspan=2, sticky="nswe")
-        
+        if "time" in question or "distance" in question:
+            ttk.Entry(self).grid(row=2, columnspan=2, sticky="nswe")
+        else:
+            if question == root.questions[0]:
+                ttk.Combobox(self, values=list(root.loadPickle("Airline").keys())).grid(row=2, columnspan=2, sticky="nswe")        
+            elif question == root.questions[1]:
+                ttk.Combobox(self, values=list(root.loadPickle("Origin").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[2]:
+                ttk.Combobox(self, values=list(root.loadPickle("Dest").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[4]:
+                ttk.Combobox(self, values=list(root.loadPickle("Month").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[5]:
+                ttk.Combobox(self, values=[1, 2, 3, 4, 5, 6, 7]).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[6]:
+                ttk.Combobox(self, values=list(root.loadPickle("OriginCityName").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[7]:
+                ttk.Combobox(self, values=list(root.loadPickle("OriginStateName").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[8]:
+                ttk.Combobox(self, values=list(root.loadPickle("DestCityName").keys())).grid(row=2, columnspan=2, sticky="nswe")
+            elif question == root.questions[9]:
+                ttk.Combobox(self, values=list(root.loadPickle("DestStateName").keys())).grid(row=2, columnspan=2, sticky="nswe")
         ttk.Button(self, text="Back", command=lambda: root.previousPage(), bootstyle="danger").grid(padx=10, pady=10, row=3, column=0, sticky="nswe")
 
         if question == "What is the distance?":
@@ -116,7 +144,3 @@ class PredictionFrame(tk.Frame):
         self.rowconfigure(2, weight=1)
         self.rowconfigure(3, weight=1)
         self.columnconfigure(0, weight=1)
-    
-        
-        
-        
