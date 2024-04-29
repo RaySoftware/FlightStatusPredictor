@@ -4,7 +4,7 @@ Welcome to Flight Status Predictor, an application that predicts if a flight may
 
 ## Prerequisites
 
-Python 3.10.12 or greater.
+Python 3.10.12 or greater.  
 Jupyter Lab
 
 ## Instructions
