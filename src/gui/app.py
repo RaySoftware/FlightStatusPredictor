@@ -95,6 +95,7 @@ class App (tk.Tk):
         # Move to the final page when done
         self.nextPage()
 
+# First page, introduction/starting page
 class MainFrame(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
@@ -113,6 +114,7 @@ class MainFrame(tk.Frame):
         self.rowconfigure(2, weight=1)
         self.columnconfigure(0, weight=1)
 
+# Each page corresponds to one question
 class PageFrame(tk.Frame):
     def __init__(self, root, question: str):
         tk.Frame.__init__(self, root)
@@ -173,6 +175,7 @@ class PageFrame(tk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
+# Last page containing the prediction
 class PredictionFrame(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
